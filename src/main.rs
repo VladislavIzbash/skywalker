@@ -29,49 +29,50 @@ fn main() -> anyhow::Result<()> {
     let mut next_x = x;
     let mut next_y = y;
     let mut angle = 0.0;
-    let mut show_hud = false;
+    let mut show_hud = true;
 
     renderer.render(&window, &level, x, y, angle, show_hud);
+    
+    loop {
+        if let Some(pancurses::Input::Character(ch)) = window.getch() {
+            match ch {
+                'q' => angle -= ROTATE_SPEED,
+                'e' => angle += ROTATE_SPEED,
+                _ => {}
+            };
 
-    while let Some(pancurses::Input::Character(ch)) = window.getch() {
-        match ch {
-            'q' => angle -= ROTATE_SPEED,
-            'e' => angle += ROTATE_SPEED,
-            _ => {}
-        };
+            let forward_x = f32::sin(angle) * MOVE_SPEED;
+            let forward_y = -f32::cos(angle) * MOVE_SPEED;
+            let right_x = f32::cos(angle) * MOVE_SPEED;
+            let right_y = f32::sin(angle) * MOVE_SPEED;
 
-        let forward_x = f32::sin(angle) * MOVE_SPEED;
-        let forward_y = -f32::cos(angle) * MOVE_SPEED;
-        let right_x = f32::cos(angle) * MOVE_SPEED;
-        let right_y = f32::sin(angle) * MOVE_SPEED;
+            match ch {
+                'w' => {
+                    next_x = x + forward_x;
+                    next_y = y + forward_y;
+                }
+                'a' => {
+                    next_x = x - right_x;
+                    next_y = y - right_y;
+                }
+                's' => {
+                    next_x = x - forward_x;
+                    next_y = y - forward_y;
+                }
+                'd' => {
+                    next_x = x + right_x;
+                    next_y = y + right_y;
+                }
+                'r' => break,
+                'h' => show_hud = !show_hud,
+                _ => {}
+            }
 
-        match ch {
-            'w' => {
-                next_x = x + forward_x;
-                next_y = y + forward_y;
+            if let Some(Cell::None) = level.cell_at(next_x, next_y) {
+                x = next_x;
+                y = next_y;
             }
-            'a' => {
-                next_x = x - right_x;
-                next_y = y - right_y;
-            }
-            's' => {
-                next_x = x - forward_x;
-                next_y = y - forward_y;
-            }
-            'd' => {
-                next_x = x + right_x;
-                next_y = y + right_y;
-            }
-            'r' => break,
-            'h' => show_hud = !show_hud,
-            _ => {}
         }
-
-        if let Some(Cell::None) = level.cell_at(next_x, next_y) {
-            x = next_x;
-            y = next_y;
-        }
-
         renderer.render(&window, &level, x, y, angle, show_hud);
     }
 
