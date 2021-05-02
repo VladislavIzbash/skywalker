@@ -1,10 +1,12 @@
 [package]
 name = "skywalker"
-version = "0.1.0"
-authors = ["Vladislav <multi.vlad@bk.ru>"]
+version = "1.0.1"
 edition = "2018"
 
 [dependencies]
 pancurses = "^0.16.1"
 thiserror = "^1.0.24"
 anyhow = "^1.0.40"
+
+[profile.release]
+lto = true
