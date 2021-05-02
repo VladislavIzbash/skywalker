@@ -1,6 +1,6 @@
 #![feature(assert_matches)]
 
-use std::{env, f32::consts::FRAC_PI_2, fs::File};
+use std::{env, f32::consts::{FRAC_PI_2, PI}, fs::File};
 
 use anyhow::Context;
 use level::{Cell, Level};
@@ -14,7 +14,7 @@ const MOVE_SPEED: f32 = 0.2;
 const ROTATE_SPEED: f32 = 0.1;
 
 fn main() -> anyhow::Result<()> {
-    let level = env::args().nth(1).context("Level file is not specified")?;
+    let level = env::args().nth(1).context("First arg (level file) is missing")?;
     let level = File::open(&level).context("Cannot open level file")?;
     let level = Level::load(level).context("Failed to load level file")?;
 
@@ -24,11 +24,11 @@ fn main() -> anyhow::Result<()> {
 
     let renderer = Renderer::new(FRAC_PI_2, f32::INFINITY);
 
-    let mut x = 1.0;
-    let mut y = 2.5;
+    let mut x = 1.5;
+    let mut y = 1.5;
     let mut next_x = x;
     let mut next_y = y;
-    let mut angle = 0.0;
+    let mut angle = PI;
     let mut show_hud = true;
 
     renderer.render(&window, &level, x, y, angle, show_hud);

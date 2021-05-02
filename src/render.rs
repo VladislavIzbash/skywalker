@@ -54,9 +54,9 @@ impl Renderer {
                 screen_height
             };
 
-            let shade = if dist > 3.0 {
+            let shade = if dist > 5.0 {
                 "\u{2591}"
-            } else if dist > 1.5 {
+            } else if dist > 2.0 {
                 "\u{2592}"
             } else {
                 "\u{2593}"
