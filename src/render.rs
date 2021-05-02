@@ -16,12 +16,11 @@ impl Renderer {
     }
 
     pub fn render(
-        &self, 
-        window: 
-        &Window, 
-        level: &Level, 
-        x: f32, 
-        y: f32, 
+        &self,
+        window: &Window,
+        level: &Level,
+        x: f32,
+        y: f32,
         angle: f32,
         with_hud: bool,
     ) {
@@ -33,9 +32,10 @@ impl Renderer {
 
         for screen_x in 0..screen_width {
             let hit = level.raytrace(
-                x, y, 
-                angle_start + (screen_x as f32) * angle_per_pixel, 
-                self.view_dist
+                x,
+                y,
+                angle_start + (screen_x as f32) * angle_per_pixel,
+                self.view_dist,
             );
 
             let dist = match hit {
@@ -75,14 +75,14 @@ impl Renderer {
         window.refresh();
     }
 
-    fn debug_hud(window: &Window, x: f32, y: f32, angle: f32) {  
+    fn debug_hud(window: &Window, x: f32, y: f32, angle: f32) {
         const OFFSET_X: i32 = 18;
         const OFFSET_Y: i32 = 1;
 
         let width = window.get_max_x();
 
         Self::draw_box(window, width - OFFSET_X, OFFSET_Y, 15, 4);
-        
+
         window.mvprintw(2, width - OFFSET_X + 1, format!("x = {:.3}", x));
         window.mvprintw(3, width - OFFSET_X + 1, format!("y = {:.3}", y));
         window.mvprintw(4, width - OFFSET_X + 1, format!("angle = {:.3}", angle));
@@ -93,7 +93,13 @@ impl Renderer {
         const OFFSET_Y: i32 = 1;
 
         let size = level.size();
-        Self::draw_box(window, OFFSET_X, OFFSET_Y, size.w as i32 + 1, size.h as i32 + 1);
+        Self::draw_box(
+            window,
+            OFFSET_X,
+            OFFSET_Y,
+            size.w as i32 + 1,
+            size.h as i32 + 1,
+        );
 
         let image = format!("{}", level);
         for (i, line) in image.lines().enumerate() {

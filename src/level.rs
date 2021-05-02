@@ -1,6 +1,6 @@
 use std::{
-    fmt::Display, 
-    io::{self, BufReader, BufRead, Read}
+    fmt::Display,
+    io::{self, BufRead, BufReader, Read},
 };
 
 use thiserror::Error;
@@ -41,7 +41,8 @@ impl Level {
         let mut lines = BufReader::new(input).lines();
         let mut cells = Vec::new();
 
-        let first = lines.next()
+        let first = lines
+            .next()
             .ok_or(LoadError::Empty)?
             .map_err(LoadError::Read)?;
 
@@ -57,7 +58,7 @@ impl Level {
             Self::load_row(&mut cells, &line, rows)?;
             rows += 1;
         }
-        
+
         Ok(Self {
             cells,
             size: Size { w: cols, h: rows },
@@ -76,9 +77,7 @@ impl Level {
     }
 
     pub fn cell_at(&self, x: f32, y: f32) -> Option<Cell> {
-        if x >= 0.0 && x <= self.size.w as f32 
-            && y >= 0.0 && y <= self.size.h as f32 {
-
+        if x >= 0.0 && x <= self.size.w as f32 && y >= 0.0 && y <= self.size.h as f32 {
             Some(self.cells[(y as usize) * self.size.w + (x as usize)])
         } else {
             None
@@ -90,13 +89,7 @@ impl Level {
         self.size
     }
 
-    pub fn raytrace(
-        &self,
-        x: f32, 
-        y: f32, 
-        angle: f32, 
-        max_dist: f32
-    ) -> Option<f32> {
+    pub fn raytrace(&self, x: f32, y: f32, angle: f32, max_dist: f32) -> Option<f32> {
         let dir_x = f32::sin(angle);
         let dir_y = -f32::cos(angle);
 
@@ -117,13 +110,15 @@ impl Level {
 
 impl Display for Level {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let str = self.cells.chunks(self.size.w)
+        let str = self.cells
+            .chunks(self.size.w)
             .map(|chunk| {
-                chunk.iter().map(|c| match c {
-                    Cell::Wall => '#',
-                    Cell::None => ' ',
-                })
-                .collect::<String>()
+                chunk.iter()
+                    .map(|c| match c {
+                        Cell::Wall => '#',
+                        Cell::None => ' ',
+                    })
+                    .collect::<String>()
             })
             .collect::<Vec<String>>()
             .join("\n");
@@ -131,7 +126,6 @@ impl Display for Level {
         write!(f, "{}", str)
     }
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -143,7 +137,7 @@ mod tests {
     fn loaded() {
         let input = "## #\n# ##".as_bytes();
         let level = Level::load(input).unwrap();
-        
+
         assert_matches!(level.size(), Size { w: 4, h: 2 });
         assert_matches!(level.cell_at(3.2, 0.1), Some(Cell::Wall));
         assert_matches!(level.cell_at(1.6, 1.0), Some(Cell::None));
@@ -182,13 +176,13 @@ mod tests {
                      # ## #\n\
                      #    #\n\
                      ######"
-                    .as_bytes();
+            .as_bytes();
 
         let level = Level::load(input).unwrap();
-        
+
         assert_matches!(level.raytrace(1.2, 0.0, 0.0, f32::INFINITY), None);
         assert_matches!(level.raytrace(1.2, 0.0, PI, 1.5), None);
-        
+
         let dist = level.raytrace(1.2, 0.0, PI, f32::INFINITY).unwrap();
         assert!(dist > 2.9 && dist < 4.0);
 
